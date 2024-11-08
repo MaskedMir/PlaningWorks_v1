@@ -1,0 +1,42 @@
+version: '3.8'
+services:
+  frontend:
+    build:
+      context: ./frontend
+    ports:
+      - "3000:80"                    # Порт для доступа к фронтенду
+    volumes:
+      - ./frontend:/usr/share/nginx/html
+    networks:
+      - app-network
+
+  backend:
+    build:
+      context: ./backend
+    ports:
+      - "5432:5432"                  # Порт для доступа к бекенду
+    environment:
+      - DATABASE_URL=postgresql://user:password@db/postgres
+    volumes:
+      - ./backend:/app
+    networks:
+      - app-network
+    depends_on:
+      - db
+
+  db:
+    image: postgres:17
+    environment:
+      POSTGRES_USER: adminka
+      POSTGRES_PASSWORD: huivamanedb
+      POSTGRES_DB: planingworksdb
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - app-network
+
+networks:
+  app-network:
+
+volumes:
+  postgres_data:
